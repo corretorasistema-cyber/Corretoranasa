@@ -55,6 +55,49 @@ export function buildWhatsappUrl(params: {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`
 }
 
+export type VideoEmbedData = {
+  provider: 'youtube' | 'instagram'
+  embedUrl: string
+  id: string
+  thumbUrl?: string
+}
+
+export function getVideoEmbedData(url: string): VideoEmbedData | null {
+  if (!url) return null
+  const trimmed = url.trim()
+
+  const youtubeId = getYoutubeId(trimmed)
+  if (youtubeId) {
+    return {
+      provider: 'youtube',
+      id: youtubeId,
+      embedUrl: `https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0`,
+      thumbUrl: `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`,
+    }
+  }
+
+  const instagram = getInstagramMedia(trimmed)
+  if (instagram) {
+    return {
+      provider: 'instagram',
+      id: instagram.id,
+      embedUrl: `https://www.instagram.com/${instagram.type}/${instagram.id}/embed/?cr=1&v=12`,
+    }
+  }
+
+  return null
+}
+
+function getInstagramMedia(url: string): { type: 'p' | 'reel' | 'tv'; id: string } | null {
+  const match = url.match(/(?:instagram\.com|instagr\.am)\/(p|reel|tv)\/([^/?#&]+)/i)
+  if (!match) return null
+  const [, type, id] = match
+  return {
+    type: type as 'p' | 'reel' | 'tv',
+    id,
+  }
+}
+
 // Extrai o ID de um vídeo do YouTube de diversos formatos de URL
 export function getYoutubeId(url: string): string | null {
   if (!url) return null

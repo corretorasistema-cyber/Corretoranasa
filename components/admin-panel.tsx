@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Pencil, Plus, RotateCcw, Trash2 } from 'lucide-react'
+import { Pencil, Plus, RotateCcw, Trash2, LogOut } from 'lucide-react'
 import { toast } from 'sonner'
 import { formatCurrency } from '@/lib/format'
 import { useStore } from '@/lib/store'
@@ -11,7 +11,11 @@ import { Button } from '@/components/ui/button'
 import { PropertyForm } from '@/components/property-form'
 import { SlotManager } from '@/components/slot-manager'
 
-export function AdminPanel() {
+interface AdminPanelProps {
+  onLogout?: () => void
+}
+
+export function AdminPanel({ onLogout }: AdminPanelProps) {
   const { properties, ready, removeProperty, resetSeed } = useStore()
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Property | null>(null)
@@ -40,7 +44,7 @@ export function AdminPanel() {
             Cadastre imóveis e defina a agenda de visitas.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="outline"
             onClick={() => {
@@ -55,6 +59,16 @@ export function AdminPanel() {
             <Plus className="size-4" />
             Adicionar imóvel
           </Button>
+          {onLogout ? (
+            <Button
+              variant="outline"
+              className="text-destructive hover:text-destructive"
+              onClick={onLogout}
+            >
+              <LogOut className="size-4" />
+              Sair
+            </Button>
+          ) : null}
         </div>
       </div>
 

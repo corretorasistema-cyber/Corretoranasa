@@ -2,24 +2,26 @@
 
 import { useState } from 'react'
 import { Play } from 'lucide-react'
-import { getYoutubeId } from '@/lib/format'
+import { getVideoEmbedData } from '@/lib/format'
 
 export function VideoTour({ url, title }: { url: string; title: string }) {
   const [active, setActive] = useState(false)
-  const id = getYoutubeId(url)
+  const data = getVideoEmbedData(url)
 
-  if (!id) return null
+  if (!data) return null
 
-  const thumb = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`
+  const { provider, embedUrl, thumbUrl } = data
+  const previewSrc = thumbUrl ?? '/placeholder.svg'
+  const overlayLabel = provider === 'instagram' ? 'Vídeo Instagram' : 'Tour Virtual'
 
   return (
     <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-border bg-card">
       {active ? (
         <iframe
           className="absolute inset-0 h-full w-full"
-          src={`https://www.youtube.com/embed/${id}?autoplay=1&rel=0`}
-          title={`Tour virtual — ${title}`}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          src={embedUrl}
+          title={`${overlayLabel} — ${title}`}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
           allowFullScreen
         />
       ) : (
@@ -27,11 +29,11 @@ export function VideoTour({ url, title }: { url: string; title: string }) {
           type="button"
           onClick={() => setActive(true)}
           className="group absolute inset-0 h-full w-full"
-          aria-label={`Reproduzir tour virtual de ${title}`}
+          aria-label={`Reproduzir ${overlayLabel.toLowerCase()} de ${title}`}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={thumb || '/placeholder.svg'}
+            src={previewSrc}
             alt=""
             className="h-full w-full object-cover"
           />
@@ -40,7 +42,7 @@ export function VideoTour({ url, title }: { url: string; title: string }) {
             <Play className="size-6 translate-x-0.5 fill-primary text-primary" />
           </span>
           <span className="absolute bottom-4 left-4 text-sm font-medium tracking-wide text-foreground">
-            Tour Virtual
+            {overlayLabel}
           </span>
         </button>
       )}

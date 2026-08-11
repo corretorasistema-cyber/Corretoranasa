@@ -261,12 +261,12 @@ export function PropertyForm({ open, onOpenChange, editing }: PropertyFormProps)
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="pf-video">Link do vídeo (YouTube)</Label>
+            <Label htmlFor="pf-video">Link do vídeo (YouTube ou Instagram)</Label>
             <Input
               id="pf-video"
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}
-              placeholder="https://www.youtube.com/watch?v=..."
+              placeholder="https://www.youtube.com/watch?v=... ou https://www.instagram.com/reel/..."
               className="focus-visible:border-primary focus-visible:ring-primary/30"
             />
           </div>
