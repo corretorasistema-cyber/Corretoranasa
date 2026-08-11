@@ -77,7 +77,7 @@ export default function Page() {
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            placeholder="admin@nasaimob.com.br"
+                placeholder=""
             required
           />
         </div>
@@ -88,7 +88,7 @@ export default function Page() {
             type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            placeholder="nasa2026"
+                placeholder=""
             required
           />
         </div>
