@@ -7,12 +7,79 @@ import { cn } from '@/lib/utils'
 import { StoreProvider } from '@/lib/store'
 import { ClientView } from '@/components/client-view'
 import { AdminPanel } from '@/components/admin-panel'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Toaster } from '@/components/ui/sonner'
 
 type View = 'client' | 'admin'
 
+const ADMIN_EMAIL = 'admin@nasaimob.com.br'
+const ADMIN_PASSWORD = 'nasa2026'
+
 export default function Page() {
   const [view, setView] = useState<View>('client')
+  const [adminAuth, setAdminAuth] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loginError, setLoginError] = useState('')
+
+  const handleAdminLogin = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    if (email.trim().toLowerCase() === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+      setAdminAuth(true)
+      setLoginError('')
+      setEmail('')
+      setPassword('')
+      return
+    }
+
+    setLoginError('E-mail ou senha incorretos.')
+  }
+
+  const adminContent = adminAuth ? (
+    <AdminPanel onLogout={() => setAdminAuth(false)} />
+  ) : (
+    <div className="mx-auto w-full max-w-md rounded-3xl border border-border bg-card/70 p-8 shadow-sm">
+      <div className="mb-6">
+        <h1 className="text-2xl font-serif">Login do Admin</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Use seu e-mail e senha para acessar o painel administrativo.
+        </p>
+      </div>
+      <form className="space-y-4" onSubmit={handleAdminLogin}>
+        <div className="space-y-2">
+          <Label htmlFor="admin-email">E-mail</Label>
+          <Input
+            id="admin-email"
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder="admin@nasaimob.com.br"
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="admin-password">Senha</Label>
+          <Input
+            id="admin-password"
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            placeholder="nasa2026"
+            required
+          />
+        </div>
+        {loginError ? (
+          <p className="text-sm text-destructive">{loginError}</p>
+        ) : null}
+        <Button type="submit" className="w-full">
+          Entrar
+        </Button>
+      </form>
+    </div>
+  )
 
   return (
     <StoreProvider>
