@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { Building2, LayoutDashboard, Phone } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -16,6 +16,7 @@ type View = 'client' | 'admin'
 
 const ADMIN_EMAIL = 'admin@nasaimob.com.br'
 const ADMIN_PASSWORD = 'nasa2026'
+const ADMIN_STORAGE_KEY = 'nasa-admin-auth'
 
 export default function Page() {
   const [view, setView] = useState<View>('client')
@@ -23,6 +24,17 @@ export default function Page() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loginError, setLoginError] = useState('')
+
+  useEffect(() => {
+    const isAuthenticated = window.localStorage.getItem(ADMIN_STORAGE_KEY) === 'true'
+    if (isAuthenticated) {
+      setAdminAuth(true)
+    }
+  }, [])
+
+  useEffect(() => {
+    window.localStorage.setItem(ADMIN_STORAGE_KEY, String(adminAuth))
+  }, [adminAuth])
 
   const handleAdminLogin = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -32,14 +44,23 @@ export default function Page() {
       setLoginError('')
       setEmail('')
       setPassword('')
+      setView('admin')
       return
     }
 
     setLoginError('E-mail ou senha incorretos.')
   }
 
+  const handleAdminLogout = () => {
+    setAdminAuth(false)
+    setView('client')
+    setLoginError('')
+    setEmail('')
+    setPassword('')
+  }
+
   const adminContent = adminAuth ? (
-    <AdminPanel onLogout={() => setAdminAuth(false)} />
+    <AdminPanel onLogout={handleAdminLogout} />
   ) : (
     <div className="mx-auto w-full max-w-md rounded-3xl border border-border bg-card/70 p-8 shadow-sm">
       <div className="mb-6">
@@ -163,7 +184,7 @@ export default function Page() {
               <ClientView />
             </>
           ) : (
-            <AdminPanel />
+            adminContent
           )}
         </main>
 
