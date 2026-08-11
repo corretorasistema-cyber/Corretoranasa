@@ -29,6 +29,7 @@ export default function Page() {
     const isAuthenticated = window.localStorage.getItem(ADMIN_STORAGE_KEY) === 'true'
     if (isAuthenticated) {
       setAdminAuth(true)
+      setView('admin')
     }
   }, [])
 
@@ -67,6 +68,9 @@ export default function Page() {
         <h1 className="text-2xl font-serif">Login do Admin</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Use seu e-mail e senha para acessar o painel administrativo.
+        </p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Selecione Painel do Admin no topo para abrir o formulário de login.
         </p>
       </div>
       <form className="space-y-4" onSubmit={handleAdminLogin}>
@@ -182,6 +186,14 @@ export default function Page() {
                 </p>
               </div>
               <ClientView />
+              <div className="mt-10 rounded-3xl border border-border bg-card/50 p-6 text-center">
+                <p className="text-sm text-muted-foreground mb-4">
+                  Para acessar o painel administrativo, clique em Painel do Admin no topo.
+                </p>
+                <Button onClick={() => setView('admin')} className="mx-auto">
+                  Acessar o Login do Admin
+                </Button>
+              </div>
             </>
           ) : (
             adminContent
@@ -224,7 +236,7 @@ function ToggleButton({
       )}
     >
       {icon}
-      <span className="hidden sm:inline">{label}</span>
+      <span className="inline">{label}</span>
     </button>
   )
 }
