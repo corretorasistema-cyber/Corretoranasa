@@ -14,8 +14,8 @@ import { Toaster } from '@/components/ui/sonner'
 
 type View = 'client' | 'admin'
 
-const ADMIN_EMAIL = 'admin@nasaimob.com.br'
-const ADMIN_PASSWORD = 'nasa2026'
+const ADMIN_EMAIL = (process.env.NEXT_PUBLIC_ADMIN_EMAIL ?? '').trim().toLowerCase()
+const ADMIN_PASSWORD = (process.env.NEXT_PUBLIC_ADMIN_PASSWORD ?? '').trim()
 const ADMIN_STORAGE_KEY = 'nasa-admin-auth'
 
 export default function Page() {
@@ -39,6 +39,11 @@ export default function Page() {
 
   const handleAdminLogin = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+
+    if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
+      setLoginError('Credenciais do painel administrativo não configuradas.')
+      return
+    }
 
     if (email.trim().toLowerCase() === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
       setAdminAuth(true)
@@ -81,7 +86,7 @@ export default function Page() {
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            placeholder="Seu e-mail"
+            placeholder="Seu e-mail administrativo"
             required
           />
         </div>
@@ -92,7 +97,7 @@ export default function Page() {
             type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            placeholder="Sua senha"
+            placeholder="Sua senha administrativa"
             required
           />
         </div>
