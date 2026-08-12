@@ -14,8 +14,6 @@ import { Toaster } from '@/components/ui/sonner'
 
 type View = 'client' | 'admin'
 
-const ADMIN_EMAIL = (process.env.NEXT_PUBLIC_ADMIN_EMAIL ?? '').trim().toLowerCase()
-const ADMIN_PASSWORD = (process.env.NEXT_PUBLIC_ADMIN_PASSWORD ?? '').trim()
 const ADMIN_STORAGE_KEY = 'nasa-admin-auth'
 
 export default function Page() {
@@ -37,24 +35,36 @@ export default function Page() {
     window.localStorage.setItem(ADMIN_STORAGE_KEY, String(adminAuth))
   }, [adminAuth])
 
-  const handleAdminLogin = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleAdminLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
-      setLoginError('Credenciais do painel administrativo não configuradas.')
-      return
-    }
+    try {
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+        }),
+      })
 
-    if (email.trim().toLowerCase() === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        setLoginError(result.message ?? 'E-mail ou senha incorretos.')
+        return
+      }
+
       setAdminAuth(true)
       setLoginError('')
       setEmail('')
       setPassword('')
       setView('admin')
-      return
+    } catch (_error) {
+      setLoginError('Não foi possível entrar no painel administrativo.')
     }
-
-    setLoginError('E-mail ou senha incorretos.')
   }
 
   const handleAdminLogout = () => {
