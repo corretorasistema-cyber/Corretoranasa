@@ -14,8 +14,8 @@ import { Toaster } from '@/components/ui/sonner'
 
 type View = 'client' | 'admin'
 
-const ADMIN_EMAIL = 'admin@nasaimob.com.br'
-const ADMIN_PASSWORD = 'nasa2026'
+const ADMIN_EMAIL = (process.env.NEXT_PUBLIC_ADMIN_EMAIL ?? '').trim().toLowerCase()
+const ADMIN_PASSWORD = (process.env.NEXT_PUBLIC_ADMIN_PASSWORD ?? '').trim()
 const ADMIN_STORAGE_KEY = 'nasa-admin-auth'
 
 export default function Page() {
@@ -29,6 +29,7 @@ export default function Page() {
     const isAuthenticated = window.localStorage.getItem(ADMIN_STORAGE_KEY) === 'true'
     if (isAuthenticated) {
       setAdminAuth(true)
+      setView('admin')
     }
   }, [])
 
@@ -38,6 +39,11 @@ export default function Page() {
 
   const handleAdminLogin = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+
+    if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
+      setLoginError('Credenciais do painel administrativo não configuradas.')
+      return
+    }
 
     if (email.trim().toLowerCase() === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
       setAdminAuth(true)
@@ -68,6 +74,9 @@ export default function Page() {
         <p className="mt-2 text-sm text-muted-foreground">
           Use seu e-mail e senha para acessar o painel administrativo.
         </p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Selecione Painel do Admin no topo para abrir o formulário de login.
+        </p>
       </div>
       <form className="space-y-4" onSubmit={handleAdminLogin}>
         <div className="space-y-2">
@@ -77,7 +86,7 @@ export default function Page() {
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            placeholder="admin@nasaimob.com.br"
+            placeholder="Seu e-mail administrativo"
             required
           />
         </div>
@@ -88,7 +97,7 @@ export default function Page() {
             type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            placeholder="nasa2026"
+            placeholder="Sua senha administrativa"
             required
           />
         </div>
@@ -182,6 +191,14 @@ export default function Page() {
                 </p>
               </div>
               <ClientView />
+              <div className="mt-10 rounded-3xl border border-border bg-card/50 p-6 text-center">
+                <p className="text-sm text-muted-foreground mb-4">
+                  Para acessar o painel administrativo, clique em Painel do Admin no topo.
+                </p>
+                <Button onClick={() => setView('admin')} className="mx-auto">
+                  Acessar o Login do Admin
+                </Button>
+              </div>
             </>
           ) : (
             adminContent
@@ -224,7 +241,7 @@ function ToggleButton({
       )}
     >
       {icon}
-      <span className="hidden sm:inline">{label}</span>
+      <span className="inline">{label}</span>
     </button>
   )
 }
